@@ -1,0 +1,323 @@
+// Sistema de gestão de sindicatos — modelo multi-sindicato (multi-tenant).
+// Toda entidade de negócio pertence a um Sindicato e é sempre consultada com sindicatoId.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sindicato {
+  id                  String   @id @default(cuid())
+  nome                String
+  sigla               String?
+  cnpj                String   @unique
+  categoria           String? // categoria profissional representada
+  email               String?
+  telefone            String?
+  endereco            String?
+  cidade              String?
+  uf                  String?
+  mensalidadeCentavos Int      @default(0) // valor padrão da mensalidade
+  diaVencimento       Int      @default(10)
+  criadoEm            DateTime @default(now())
+
+  usuarios     Usuario[]
+  empresas     Empresa[]
+  filiados     Filiado[]
+  convencoes   Convencao[]
+  cobrancas    Cobranca[]
+  lancamentos  Lancamento[]
+  atendimentos Atendimento[]
+  eventos      Evento[]
+  comunicados  Comunicado[]
+}
+
+enum Papel {
+  ADMIN // gerencia o sindicato e os usuários
+  OPERADOR // opera o dia a dia
+}
+
+model Usuario {
+  id          String    @id @default(cuid())
+  sindicatoId String
+  sindicato   Sindicato @relation(fields: [sindicatoId], references: [id], onDelete: Cascade)
+  nome        String
+  email       String    @unique
+  senhaHash   String
+  papel       Papel     @default(OPERADOR)
+  ativo       Boolean   @default(true)
+  criadoEm    DateTime  @default(now())
+
+  atendimentos Atendimento[]          @relation("Responsavel")
+  andamentos   AndamentoAtendimento[]
+  comunicados  Comunicado[]
+
+  @@index([sindicatoId])
+}
+
+model Empresa {
+  id              String    @id @default(cuid())
+  sindicatoId     String
+  sindicato       Sindicato @relation(fields: [sindicatoId], references: [id], onDelete: Cascade)
+  razaoSocial     String
+  nomeFantasia    String?
+  cnpj            String
+  email           String?
+  telefone        String?
+  contato         String? // responsável de RH / contato
+  endereco        String?
+  cidade          String?
+  uf              String?
+  numFuncionarios Int?
+  ativa           Boolean   @default(true)
+  criadoEm        DateTime  @default(now())
+
+  filiados     Filiado[]
+  convencoes   Convencao[]
+  cobrancas    Cobranca[]
+  atendimentos Atendimento[]
+
+  @@unique([sindicatoId, cnpj])
+}
+
+enum StatusFiliado {
+  ATIVO
+  AFASTADO
+  APOSENTADO
+  DESFILIADO
+}
+
+model Filiado {
+  id                  String        @id @default(cuid())
+  sindicatoId         String
+  sindicato           Sindicato     @relation(fields: [sindicatoId], references: [id], onDelete: Cascade)
+  matricula           Int
+  nome                String
+  cpf                 String
+  rg                  String?
+  dataNascimento      DateTime?
+  email               String?
+  telefone            String?
+  endereco            String?
+  cidade              String?
+  uf                  String?
+  cep                 String?
+  empresaId           String?
+  empresa             Empresa?      @relation(fields: [empresaId], references: [id], onDelete: SetNull)
+  cargo               String?
+  salarioCentavos     Int?
+  dataAdmissao        DateTime?
+  dataFiliacao        DateTime      @default(now())
+  dataDesfiliacao     DateTime?
+  status              StatusFiliado @default(ATIVO)
+  mensalidadeCentavos Int? // sobrescreve o valor padrão do sindicato
+  observacoes         String?
+  criadoEm            DateTime      @default(now())
+
+  dependentes  Dependente[]
+  cobrancas    Cobranca[]
+  atendimentos Atendimento[]
+  presencas    Presenca[]
+
+  @@unique([sindicatoId, matricula])
+  @@unique([sindicatoId, cpf])
+  @@index([sindicatoId, status])
+}
+
+model Dependente {
+  id             String    @id @default(cuid())
+  filiadoId      String
+  filiado        Filiado   @relation(fields: [filiadoId], references: [id], onDelete: Cascade)
+  nome           String
+  parentesco     String
+  dataNascimento DateTime?
+  cpf            String?
+}
+
+enum TipoConvencao {
+  CCT // Convenção Coletiva de Trabalho (sindicato x sindicato patronal)
+  ACT // Acordo Coletivo de Trabalho (sindicato x empresa)
+}
+
+model Convencao {
+  id                 String        @id @default(cuid())
+  sindicatoId        String
+  sindicato          Sindicato     @relation(fields: [sindicatoId], references: [id], onDelete: Cascade)
+  tipo               TipoConvencao
+  titulo             String
+  numeroRegistro     String? // registro no Sistema Mediador (MTE)
+  parteContraria     String? // sindicato patronal (CCT)
+  empresaId          String? // empresa (ACT)
+  empresa            Empresa?      @relation(fields: [empresaId], references: [id], onDelete: SetNull)
+  vigenciaInicio     DateTime
+  vigenciaFim        DateTime
+  mesDataBase        Int? // 1-12
+  pisoCentavos       Int?
+  reajustePercentual Float?
+  clausulas          String? // resumo das principais cláusulas
+  criadoEm           DateTime      @default(now())
+
+  @@index([sindicatoId, vigenciaFim])
+}
+
+enum TipoCobranca {
+  MENSALIDADE
+  CONTRIBUICAO_ASSISTENCIAL
+  CONTRIBUICAO_NEGOCIAL
+  OUTRA
+}
+
+enum StatusCobranca {
+  PENDENTE
+  PAGA
+  CANCELADA
+}
+
+model Cobranca {
+  id                String         @id @default(cuid())
+  sindicatoId       String
+  sindicato         Sindicato      @relation(fields: [sindicatoId], references: [id], onDelete: Cascade)
+  tipo              TipoCobranca   @default(MENSALIDADE)
+  filiadoId         String?
+  filiado           Filiado?       @relation(fields: [filiadoId], references: [id], onDelete: Cascade)
+  empresaId         String? // contribuições cobradas da empresa
+  empresa           Empresa?       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  competencia       String // AAAA-MM
+  descricao         String?
+  valorCentavos     Int
+  vencimento        DateTime
+  status            StatusCobranca @default(PENDENTE)
+  pagoEm            DateTime?
+  valorPagoCentavos Int?
+  formaPagamento    String?
+  criadoEm          DateTime       @default(now())
+
+  lancamento Lancamento?
+
+  @@index([sindicatoId, status, vencimento])
+  @@index([sindicatoId, competencia])
+}
+
+enum TipoLancamento {
+  RECEITA
+  DESPESA
+}
+
+model Lancamento {
+  id            String         @id @default(cuid())
+  sindicatoId   String
+  sindicato     Sindicato      @relation(fields: [sindicatoId], references: [id], onDelete: Cascade)
+  tipo          TipoLancamento
+  categoria     String
+  descricao     String
+  valorCentavos Int
+  data          DateTime
+  cobrancaId    String?        @unique
+  cobranca      Cobranca?      @relation(fields: [cobrancaId], references: [id], onDelete: SetNull)
+  criadoEm      DateTime       @default(now())
+
+  @@index([sindicatoId, data])
+}
+
+enum TipoAtendimento {
+  JURIDICO
+  HOMOLOGACAO
+  DENUNCIA
+  ORIENTACAO
+  OUTRO
+}
+
+enum StatusAtendimento {
+  ABERTO
+  EM_ANDAMENTO
+  CONCLUIDO
+  ARQUIVADO
+}
+
+model Atendimento {
+  id            String            @id @default(cuid())
+  sindicatoId   String
+  sindicato     Sindicato         @relation(fields: [sindicatoId], references: [id], onDelete: Cascade)
+  protocolo     Int
+  tipo          TipoAtendimento
+  assunto       String
+  descricao     String?
+  status        StatusAtendimento @default(ABERTO)
+  filiadoId     String?
+  filiado       Filiado?          @relation(fields: [filiadoId], references: [id], onDelete: SetNull)
+  solicitante   String? // quando não é filiado
+  empresaId     String?
+  empresa       Empresa?          @relation(fields: [empresaId], references: [id], onDelete: SetNull)
+  responsavelId String?
+  responsavel   Usuario?          @relation("Responsavel", fields: [responsavelId], references: [id], onDelete: SetNull)
+  abertoEm      DateTime          @default(now())
+  concluidoEm   DateTime?
+
+  andamentos AndamentoAtendimento[]
+
+  @@unique([sindicatoId, protocolo])
+  @@index([sindicatoId, status])
+}
+
+model AndamentoAtendimento {
+  id            String      @id @default(cuid())
+  atendimentoId String
+  atendimento   Atendimento @relation(fields: [atendimentoId], references: [id], onDelete: Cascade)
+  autorId       String?
+  autor         Usuario?    @relation(fields: [autorId], references: [id], onDelete: SetNull)
+  texto         String
+  criadoEm      DateTime    @default(now())
+}
+
+enum TipoEvento {
+  ASSEMBLEIA
+  REUNIAO
+  CURSO
+  EVENTO
+}
+
+model Evento {
+  id          String     @id @default(cuid())
+  sindicatoId String
+  sindicato   Sindicato  @relation(fields: [sindicatoId], references: [id], onDelete: Cascade)
+  tipo        TipoEvento
+  titulo      String
+  descricao   String? // pauta / descrição
+  local       String?
+  inicio      DateTime
+  fim         DateTime?
+  ata         String? // ata / deliberações
+  criadoEm    DateTime   @default(now())
+
+  presencas Presenca[]
+
+  @@index([sindicatoId, inicio])
+}
+
+model Presenca {
+  id           String   @id @default(cuid())
+  eventoId     String
+  evento       Evento   @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+  filiadoId    String
+  filiado      Filiado  @relation(fields: [filiadoId], references: [id], onDelete: Cascade)
+  registradoEm DateTime @default(now())
+
+  @@unique([eventoId, filiadoId])
+}
+
+model Comunicado {
+  id          String    @id @default(cuid())
+  sindicatoId String
+  sindicato   Sindicato @relation(fields: [sindicatoId], references: [id], onDelete: Cascade)
+  titulo      String
+  conteudo    String
+  autorId     String?
+  autor       Usuario?  @relation(fields: [autorId], references: [id], onDelete: SetNull)
+  publicadoEm DateTime  @default(now())
+
+  @@index([sindicatoId, publicadoEm])
+}
