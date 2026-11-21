@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { COOKIE_SESSAO, verificarSessao } from './lib/sessao-token';
 
-const ROTAS_PUBLICAS = ['/login', '/instalacao'];
+const ROTAS_PUBLICAS = ['/login', '/instalacao', '/api/saude'];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

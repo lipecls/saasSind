@@ -20,7 +20,11 @@ Sistema para a gestão de **um sindicato**: filiados, financeiro, convenções, 
 
 Next.js 15 (App Router + Server Actions) · React 19 · TypeScript · PostgreSQL · Prisma · sessão JWT em cookie httpOnly (`jose`) · senhas com bcrypt.
 
-## Rodando localmente
+## Instalação no servidor do sindicato
+
+Veja o passo a passo em **[INSTALACAO.md](INSTALACAO.md)** (Docker ou manual no Ubuntu, backup e atualização).
+
+## Rodando para desenvolvimento
 
 Requisitos: Node 20+ e PostgreSQL.
 

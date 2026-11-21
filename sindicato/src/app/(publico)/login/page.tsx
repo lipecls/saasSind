@@ -4,6 +4,8 @@ import { Campo } from '@/components/Campos';
 import { entrar, sistemaInstalado } from '../acoes';
 
 export const metadata = { title: 'Entrar' };
+// Sempre dinâmica: decide a cada acesso se o sistema já foi instalado.
+export const dynamic = 'force-dynamic';
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ voltar?: string }> }) {
   if (!(await sistemaInstalado())) redirect('/instalacao');

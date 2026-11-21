@@ -10,7 +10,9 @@ export async function iniciarSessao(dados: DadosSessao) {
   (await cookies()).set(COOKIE_SESSAO, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    // Ative (COOKIE_SECURE=true) quando o sistema for acessado por HTTPS.
+    // Em rede local via http://IP, o navegador descartaria um cookie "secure" e o login não funcionaria.
+    secure: process.env.COOKIE_SECURE === 'true',
     path: '/',
     maxAge: DURACAO_SESSAO_SEG,
   });
