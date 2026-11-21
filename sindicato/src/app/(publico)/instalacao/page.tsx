@@ -1,16 +1,19 @@
-import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Form } from '@/components/Form';
 import { Campo, Grupo, Selecao } from '@/components/Campos';
 import { UFS } from '@/lib/rotulos';
-import { cadastrarSindicato } from '../acoes';
+import { instalar, sistemaInstalado } from '../acoes';
 
-export const metadata = { title: 'Cadastrar sindicato' };
+export const metadata = { title: 'Instalação' };
+export const dynamic = 'force-dynamic';
 
-export default function Cadastro() {
+export default async function Instalacao() {
+  if (await sistemaInstalado()) redirect('/login');
   return (
     <div className="caixa-publica caixa-larga">
-      <h1>Cadastre seu sindicato</h1>
-      <Form acao={cadastrarSindicato} rotulo="Criar conta">
+      <h1>Instalação do sistema</h1>
+      <p className="texto-apoio">Informe os dados do sindicato e crie o primeiro administrador. Os demais usuários são cadastrados depois, em Configurações.</p>
+      <Form acao={instalar} rotulo="Concluir instalação">
         <Grupo titulo="Sindicato">
           <Campo nome="nome" rotulo="Nome do sindicato" obrigatorio largura="cheia" />
           <Campo nome="sigla" rotulo="Sigla" />
@@ -26,9 +29,6 @@ export default function Cadastro() {
           <Campo nome="senha" rotulo="Senha" tipo="password" obrigatorio minLength={8} dica="Mínimo de 8 caracteres" />
         </Grupo>
       </Form>
-      <p className="rodape-publico">
-        Já tem conta? <Link href="/login">Entrar</Link>
-      </p>
     </div>
   );
 }

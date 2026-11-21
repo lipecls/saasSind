@@ -1,6 +1,6 @@
 # SindGestão — gestão de sindicatos de trabalhadores
 
-SaaS multi-sindicato: cada sindicato se cadastra e tem seus dados totalmente isolados.
+Sistema para a gestão de **um sindicato**: filiados, financeiro, convenções, atendimentos e eventos.
 
 ## Módulos
 
@@ -34,7 +34,7 @@ npm run dev                   # http://localhost:3000
 ```
 
 Login da demonstração: `admin@demo.org.br` / `sindicato123` (operador: `juridico@demo.org.br`).
-Ou crie um sindicato novo em `/cadastro`.
+Sem o seed, o primeiro acesso abre a **instalação** (`/instalacao`): você informa os dados do sindicato e cria o administrador. Depois disso a instalação é bloqueada e os demais usuários são criados em *Configurações*.
 
 ## Testes
 
@@ -47,9 +47,8 @@ node e2e/fluxos.js
 
 ## Arquitetura
 
-- `prisma/schema.prisma` — modelo de dados. Toda entidade tem `sindicatoId`.
+- `prisma/schema.prisma` — modelo de dados. As entidades guardam `sindicatoId` (há um único sindicato, criado na instalação).
 - `src/lib/sessao.ts` — `usuarioAtual()` valida o cookie **e** o usuário no banco a cada requisição; `exigirAdmin()` para áreas restritas.
-- Isolamento: toda consulta e alteração filtra por `sindicatoId` da sessão (`findFirst({ where: { id, sindicatoId } })`, `updateMany`/`deleteMany` com `sindicatoId`); IDs de outro sindicato resultam em 404.
 - `src/middleware.ts` — redireciona quem não está logado para `/login`.
 - Valores monetários em **centavos** (inteiros); datas "só dia" salvas ao meio-dia UTC; horários de eventos interpretados em horário de Brasília.
 - `src/app/(sistema)/<módulo>/acoes.ts` — server actions de cada módulo; páginas são Server Components.

@@ -1,11 +1,12 @@
-import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Form } from '@/components/Form';
 import { Campo } from '@/components/Campos';
-import { entrar } from '../acoes';
+import { entrar, sistemaInstalado } from '../acoes';
 
 export const metadata = { title: 'Entrar' };
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ voltar?: string }> }) {
+  if (!(await sistemaInstalado())) redirect('/instalacao');
   const { voltar } = await searchParams;
   return (
     <div className="caixa-publica">
@@ -17,9 +18,6 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
           <Campo nome="senha" rotulo="Senha" tipo="password" obrigatorio largura="cheia" autoComplete="current-password" />
         </div>
       </Form>
-      <p className="rodape-publico">
-        Sindicato novo por aqui? <Link href="/cadastro">Cadastre seu sindicato</Link>
-      </p>
     </div>
   );
 }

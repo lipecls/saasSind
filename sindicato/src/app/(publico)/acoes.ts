@@ -21,8 +21,13 @@ export async function entrar(_: EstadoAcao, form: FormData): Promise<EstadoAcao>
   redirect(voltar.startsWith('/') && !voltar.startsWith('//') ? voltar : '/painel');
 }
 
-export async function cadastrarSindicato(_: EstadoAcao, form: FormData): Promise<EstadoAcao> {
+/**
+ * Instalação inicial: cria o sindicato e o primeiro administrador.
+ * O sistema atende um único sindicato, então só funciona enquanto o banco estiver vazio.
+ */
+export async function instalar(_: EstadoAcao, form: FormData): Promise<EstadoAcao> {
   return executar(async () => {
+    if (await sistemaInstalado()) redirect('/login');
     const nome = obrigatorio(form, 'nome', 'o nome do sindicato');
     const cnpj = somenteDigitos(obrigatorio(form, 'cnpj', 'o CNPJ'));
     if (!cnpjValido(cnpj)) throw new ErroValidacao('CNPJ inválido.');
@@ -31,7 +36,10 @@ export async function cadastrarSindicato(_: EstadoAcao, form: FormData): Promise
     const senha = texto(form, 'senha');
     if (senha.length < 8) throw new ErroValidacao('A senha deve ter pelo menos 8 caracteres.');
 
-    const sindicato = await db.sindicato.create({
+    const sindicato = await db.$transaction(async (tx) => {
+      // Reconfere dentro da transação para evitar duas instalações simultâneas.
+      if ((await tx.sindicato.count()) > 0) throw new ErroValidacao('O sistema já foi instalado.');
+      return tx.sindicato.create({
       data: {
         nome,
         cnpj,
@@ -45,11 +53,16 @@ export async function cadastrarSindicato(_: EstadoAcao, form: FormData): Promise
         },
       },
       include: { usuarios: true },
+      });
     });
     const admin = sindicato.usuarios[0];
     await iniciarSessao({ usuarioId: admin.id, sindicatoId: sindicato.id, papel: 'ADMIN' });
     redirect('/painel');
   });
+}
+
+export async function sistemaInstalado() {
+  return (await db.sindicato.count()) > 0;
 }
 
 export async function sair() {

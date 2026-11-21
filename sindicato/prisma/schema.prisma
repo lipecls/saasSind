@@ -1,5 +1,6 @@
-// Sistema de gestão de sindicatos — modelo multi-sindicato (multi-tenant).
-// Toda entidade de negócio pertence a um Sindicato e é sempre consultada com sindicatoId.
+// Sistema de gestão de sindicato. O sistema atende um único sindicato (criado na instalação);
+// as entidades guardam sindicatoId e as consultas filtram por ele, o que mantém os dados
+// consistentes e permitiria atender mais de um sindicato no futuro sem migração de dados.
 
 generator client {
   provider = "prisma-client-js"

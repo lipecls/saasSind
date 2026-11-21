@@ -131,22 +131,11 @@ require('node:fs').mkdirSync(SP + '/shots', { recursive: true });
   await page.waitForSelector('.alerta-erro');
   ok((await page.textContent('.alerta-erro')).includes('empresa'), 'ACT exige empresa');
 
-  // Isolamento multi-sindicato: cadastrar outro sindicato e tentar abrir o filiado do primeiro
+  // Instalação bloqueada depois que o sindicato existe
   const ctx2 = await browser.newContext();
   const p2 = await ctx2.newPage();
-  await p2.goto(B + '/cadastro');
-  await p2.fill('input[name=nome]', 'Sindicato Outro E2E');
-  await p2.fill('input[name=cnpj]', '45.997.418/0001-53');
-  await p2.fill('input[name=nomeUsuario]', 'Outro Admin');
-  await p2.fill('input[name=email]', `outro${Date.now()}@e2e.org`);
-  await p2.fill('input[name=senha]', 'senha12345');
-  await p2.click('button[type=submit]:not(.btn-link)');
-  await p2.waitForURL('**/painel');
-  ok(true, 'cadastro de novo sindicato');
-  await p2.goto(B + '/filiados');
-  ok((await p2.textContent('.subtitulo')).startsWith('0 '), 'novo sindicato não vê filiados do outro');
-  await p2.goto(urlFiliado);
-  ok((await p2.textContent('body')).includes('Registro não encontrado'), 'acesso direto à ficha de outro sindicato bloqueado');
+  await p2.goto(B + '/instalacao');
+  ok(p2.url().endsWith('/login'), 'instalação bloqueada quando o sistema já está instalado');
 
   // Operador não acessa configurações
   const ctx3 = await browser.newContext();

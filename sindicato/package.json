@@ -2,7 +2,7 @@
   "name": "sindicato",
   "version": "0.1.0",
   "private": true,
-  "description": "Sistema de gestão de sindicatos de trabalhadores (SaaS multi-sindicato)",
+  "description": "Sistema de gestão de sindicato de trabalhadores",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
