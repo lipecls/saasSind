@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { COOKIE_SESSAO, verificarSessao } from './lib/sessao-token';
 
-const ROTAS_PUBLICAS = ['/login', '/instalacao', '/api/saude'];
+const ROTAS_PUBLICAS = ['/login', '/instalacao', '/api/saude', '/offline.html', '/manifest.webmanifest', '/sw.js'];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -13,7 +13,8 @@ export async function middleware(req: NextRequest) {
     if (pathname !== '/') url.searchParams.set('voltar', pathname);
     return NextResponse.redirect(url);
   }
-  if (sessao && (publica || pathname === '/')) {
+  const telaDeEntrada = pathname === '/' || pathname.startsWith('/login') || pathname.startsWith('/instalacao');
+  if (sessao && telaDeEntrada) {
     return NextResponse.redirect(new URL('/painel', req.url));
   }
   return NextResponse.next();

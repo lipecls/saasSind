@@ -5,6 +5,7 @@ import { usuarioAtual } from '@/lib/sessao';
 import { garantir } from '@/lib/tenant';
 import { BotaoImprimir } from '@/components/BotaoImprimir';
 import Link from 'next/link';
+import { MARCA } from '@/lib/marca';
 
 export const metadata = { title: 'Carteirinha' };
 
@@ -23,7 +24,8 @@ export default async function Carteirinha({ params }: { params: Promise<{ id: st
       </div>
       <div className="carteirinha">
         <div className="carteirinha-topo">
-          <span className="logo">✊</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={MARCA.simbolo} alt="" className="simbolo" />
           <div>
             <strong>{sindicato.sigla || sindicato.nome}</strong>
             <small>{sindicato.sigla ? sindicato.nome : sindicato.categoria}</small>

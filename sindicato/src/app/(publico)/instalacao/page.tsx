@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { Form } from '@/components/Form';
 import { Campo, Grupo, Selecao } from '@/components/Campos';
+import { MARCA } from '@/lib/marca';
 import { UFS } from '@/lib/rotulos';
 import { instalar, sistemaInstalado } from '../acoes';
 
@@ -15,12 +16,12 @@ export default async function Instalacao() {
       <p className="texto-apoio">Informe os dados do sindicato e crie o primeiro administrador. Os demais usuários são cadastrados depois, em Configurações.</p>
       <Form acao={instalar} rotulo="Concluir instalação">
         <Grupo titulo="Sindicato">
-          <Campo nome="nome" rotulo="Nome do sindicato" obrigatorio largura="cheia" />
-          <Campo nome="sigla" rotulo="Sigla" />
+          <Campo nome="nome" rotulo="Nome do sindicato" obrigatorio largura="cheia" padrao={MARCA.nome} />
+          <Campo nome="sigla" rotulo="Sigla" padrao={MARCA.sigla} />
           <Campo nome="cnpj" rotulo="CNPJ" obrigatorio placeholder="00.000.000/0000-00" />
-          <Campo nome="categoria" rotulo="Categoria profissional" largura="cheia" placeholder="Ex.: Comerciários, Metalúrgicos…" />
-          <Campo nome="cidade" rotulo="Cidade" />
-          <Selecao nome="uf" rotulo="UF" opcoes={UFS} vazio="—" />
+          <Campo nome="categoria" rotulo="Categoria profissional" largura="cheia" padrao="Empregados em serviços notariais e de registro" />
+          <Campo nome="cidade" rotulo="Cidade" padrao="Teresina" />
+          <Selecao nome="uf" rotulo="UF" opcoes={UFS} vazio="—" padrao="PI" />
           <Campo nome="mensalidade" rotulo="Mensalidade padrão (R$)" placeholder="0,00" inputMode="decimal" />
         </Grupo>
         <Grupo titulo="Administrador">

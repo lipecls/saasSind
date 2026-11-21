@@ -213,14 +213,33 @@ Logs: `journalctl -u sindicato -f`.
 
 ---
 
+## App no celular
+
+O sistema pode ser instalado no celular como aplicativo (PWA), sem loja de aplicativos: ganha o ícone do SINDENOR-PI na tela inicial e abre em tela cheia. No celular, a navegação fica na barra inferior (Painel, Filiados, Financeiro, Atendimentos e **Mais**).
+
+**Como instalar** (com o celular no Wi-Fi do sindicato, abra o endereço do sistema e entre):
+
+- **Android (Chrome):** menu **Mais → Instalar app no celular**, ou menu **⋮** do Chrome → **Instalar app**.
+- **iPhone (Safari):** botão **Compartilhar** (quadrado com seta ↑) → **Adicionar à Tela de Início**.
+
+**Importante — HTTPS:** os navegadores só liberam o app completo (tela cheia, ícone próprio, aviso de "sem conexão") quando o sistema é acessado por **HTTPS**. Pelo endereço `http://IP:3000` o celular cria apenas um **atalho** que abre no navegador — funciona, mas não como app. Para ter o app completo, use uma das opções da seção abaixo (a mais simples é o Tailscale) e defina `COOKIE_SECURE=true` no `.env`.
+
+**Privacidade:** o app **não guarda dados de filiados no celular**. Só ficam no aparelho os arquivos do próprio app (telas, ícones); as informações são sempre buscadas no servidor. Celular perdido não expõe a base de dados — basta trocar a senha do usuário.
+
 ## Acesso de fora do sindicato / HTTPS (opcional)
 
-Para uso apenas na rede interna, `http://IP:3000` é suficiente. Se precisar acessar pela internet, **não** abra a porta 3000 no roteador diretamente: use uma VPN (ex.: Tailscale, WireGuard) ou um proxy com HTTPS (ex.: Caddy, Nginx) e então defina `COOKIE_SECURE=true` no `.env`.
+Para uso apenas no computador, dentro da rede interna, `http://IP:3000` é suficiente. HTTPS é necessário para o **app completo no celular** e para acessar **de fora do sindicato**. **Não** abra a porta 3000 no roteador diretamente. Opções:
+
+- **Tailscale (mais simples):** VPN gratuita para poucos usuários. Instale o Tailscale no servidor e nos celulares/computadores autorizados; no servidor, ative o HTTPS com `sudo tailscale serve --bg 3000`. O sistema fica disponível em `https://NOME-DO-SERVIDOR.SEU-TAILNET.ts.net`, com certificado válido, só para os aparelhos da sua rede Tailscale — inclusive fora do sindicato.
+- **Domínio próprio + proxy (Caddy ou Nginx):** se o sindicato tiver um domínio (ex.: `sistema.sindenorpi.org.br`), um proxy como o Caddy obtém o certificado automaticamente. Exige configurar o roteador e o DNS; peça apoio de um técnico.
+
+Em qualquer caso, depois de ativar HTTPS defina `COOKIE_SECURE=true` no `.env` e reinicie (`docker compose up -d`).
 
 ## Problemas comuns
 
 | Sintoma | Causa provável |
 | --- | --- |
+| No celular abre com a barra do navegador, não como app | Acesso por `http://`. O app completo exige HTTPS (veja *App no celular*) |
 | Faz login e volta para a tela de login | `COOKIE_SECURE=true` com acesso por `http://`. Use `false` ou configure HTTPS |
 | Outros computadores não abrem a página | Firewall do servidor bloqueando a porta 3000, ou IP do servidor mudou |
 | `defina POSTGRES_PASSWORD no arquivo .env` | O arquivo `.env` não foi criado na pasta `sindicato` |

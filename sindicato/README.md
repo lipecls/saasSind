@@ -1,4 +1,6 @@
-# SindGestão — gestão de sindicatos de trabalhadores
+# SINDENOR-PI — Sistema de gestão
+
+Sistema do **Sindicato dos Empregados em Serviços Notariais e de Registro do Estado do Piauí**.
 
 Sistema para a gestão de **um sindicato**: filiados, financeiro, convenções, atendimentos e eventos.
 
@@ -14,6 +16,7 @@ Sistema para a gestão de **um sindicato**: filiados, financeiro, convenções, 
 | **Atendimentos** | Jurídico, homologações, denúncias e orientações com protocolo, responsável e histórico de andamentos |
 | **Eventos** | Assembleias, reuniões e cursos com pauta, lista de presença (por matrícula ou CPF) e ata |
 | **Comunicados** | Avisos à categoria |
+| **App no celular** | Instalável na tela inicial (PWA), navegação inferior no celular, aviso de sem conexão; nenhum dado de filiado fica gravado no aparelho |
 | **Configurações** | Dados do sindicato, mensalidade padrão, dia de vencimento, usuários (Administrador / Operador) |
 
 ## Stack

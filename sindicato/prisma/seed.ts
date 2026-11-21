@@ -36,7 +36,7 @@ const competencia = (d: Date) => d.toISOString().slice(0, 7);
 
 const NOMES = ['Ana', 'Bruno', 'Carla', 'Diego', 'Eduarda', 'Felipe', 'Gabriela', 'Henrique', 'Isabela', 'João', 'Juliana', 'Lucas', 'Mariana', 'Marcos', 'Natália', 'Otávio', 'Patrícia', 'Rafael', 'Sabrina', 'Thiago', 'Vanessa', 'Wagner', 'Aline', 'Cláudio', 'Daniela', 'Fábio', 'Luciana', 'Rodrigo', 'Simone', 'Paulo'];
 const SOBRENOMES = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Lima', 'Pereira', 'Ferreira', 'Costa', 'Rodrigues', 'Almeida', 'Nascimento', 'Carvalho', 'Gomes', 'Ribeiro', 'Martins', 'Araújo', 'Barbosa', 'Rocha'];
-const CARGOS = ['Operador de caixa', 'Repositor', 'Vendedor', 'Estoquista', 'Fiscal de loja', 'Atendente', 'Auxiliar administrativo', 'Açougueiro', 'Padeiro', 'Gerente de setor'];
+const CARGOS = ['Escrevente', 'Escrevente autorizado', 'Auxiliar de cartório', 'Oficial substituto', 'Tabelião substituto', 'Atendente', 'Digitador', 'Auxiliar administrativo', 'Arquivista', 'Caixa'];
 
 async function main() {
   const existente = await db.sindicato.findUnique({ where: { cnpj: '11222333000181' } });
@@ -47,15 +47,16 @@ async function main() {
 
   const sindicato = await db.sindicato.create({
     data: {
-      nome: 'Sindicato dos Empregados no Comércio de Vila Nova',
-      sigla: 'SECVN',
+      // Dados de demonstração (fictícios), exceto nome e sigla.
+      nome: 'Sindicato dos Empregados em Serviços Notariais e de Registro do Estado do Piauí',
+      sigla: 'SINDENOR-PI',
       cnpj: '11222333000181',
-      categoria: 'Empregados no comércio varejista e atacadista',
+      categoria: 'Empregados em serviços notariais e de registro',
       email: 'contato@demo.org.br',
-      telefone: '(11) 3333-4444',
-      endereco: 'Rua dos Trabalhadores, 100 — Centro',
-      cidade: 'Vila Nova',
-      uf: 'SP',
+      telefone: '(86) 3333-4444',
+      endereco: 'Rua Exemplo, 100 — Centro',
+      cidade: 'Teresina',
+      uf: 'PI',
       mensalidadeCentavos: 3500,
       diaVencimento: 10,
     },
@@ -65,17 +66,17 @@ async function main() {
   const juridico = await db.usuario.create({ data: { sindicatoId: sindicato.id, nome: 'Dr. Carlos Advogado', email: 'juridico@demo.org.br', senhaHash, papel: 'OPERADOR' } });
 
   const nomesEmpresas = [
-    ['Supermercados Bom Preço Ltda', 'Bom Preço', 180],
-    ['Magazine Central S.A.', 'Magazine Central', 95],
-    ['Atacadão Vila Nova Ltda', 'Atacadão VN', 140],
-    ['Farmácias Saúde Já Ltda', 'Saúde Já', 45],
-    ['Calçados Passo Firme ME', 'Passo Firme', 12],
+    ['Cartório Exemplo do 1º Ofício de Notas', '1º Ofício (exemplo)', 42],
+    ['Cartório Exemplo de Registro de Imóveis', 'Registro de Imóveis (exemplo)', 35],
+    ['Cartório Exemplo de Registro Civil', 'Registro Civil (exemplo)', 18],
+    ['Serventia Extrajudicial Exemplo do Interior', 'Serventia Interior (exemplo)', 9],
+    ['Cartório Exemplo de Títulos e Documentos', 'Títulos e Documentos (exemplo)', 14],
   ] as const;
   const empresas = [];
   for (const [razaoSocial, nomeFantasia, numFuncionarios] of nomesEmpresas) {
     empresas.push(
       await db.empresa.create({
-        data: { sindicatoId: sindicato.id, razaoSocial, nomeFantasia, numFuncionarios, cnpj: gerarCnpj(), cidade: 'Vila Nova', uf: 'SP', contato: `RH ${nomeFantasia}`, telefone: `(11) 9${entre(1000, 9999)}-${entre(1000, 9999)}` },
+        data: { sindicatoId: sindicato.id, razaoSocial, nomeFantasia, numFuncionarios, cnpj: gerarCnpj(), cidade: 'Teresina', uf: 'PI', contato: `RH ${nomeFantasia}`, telefone: `(86) 9${entre(1000, 9999)}-${entre(1000, 9999)}` },
       }),
     );
   }
@@ -85,7 +86,8 @@ async function main() {
   for (let i = 1; i <= 80; i++) {
     const nome = `${escolher(NOMES)} ${escolher(SOBRENOMES)} ${escolher(SOBRENOMES)}`;
     const status = i % 17 === 0 ? 'DESFILIADO' : i % 23 === 0 ? 'AFASTADO' : i % 29 === 0 ? 'APOSENTADO' : 'ATIVO';
-    const filiacao = dia(hoje.getUTCFullYear() - entre(0, 8), entre(1, 12), entre(1, 28));
+    // data de filiação no passado (até 8 anos atrás), nunca no futuro
+    const filiacao = new Date(hoje.getTime() - entre(30, 8 * 365) * 86_400_000);
     filiados.push(
       await db.filiado.create({
         data: {
@@ -95,9 +97,9 @@ async function main() {
           cpf: gerarCpf(),
           dataNascimento: dia(entre(1965, 2004), i === 1 ? hoje.getUTCMonth() + 1 : entre(1, 12), entre(1, 28)),
           email: `${nome.split(' ')[0].toLowerCase().normalize('NFD').replace(/[^a-z]/g, '')}${i}@email.com`,
-          telefone: `(11) 9${entre(1000, 9999)}-${entre(1000, 9999)}`,
-          cidade: 'Vila Nova',
-          uf: 'SP',
+          telefone: `(86) 9${entre(1000, 9999)}-${entre(1000, 9999)}`,
+          cidade: 'Teresina',
+          uf: 'PI',
           empresaId: escolher(empresas).id,
           cargo: escolher(CARGOS),
           salarioCentavos: entre(1800, 4500) * 100,
@@ -151,11 +153,11 @@ async function main() {
   const ano = hoje.getUTCFullYear();
   await db.convencao.create({
     data: {
-      sindicatoId: sindicato.id, tipo: 'CCT', titulo: `CCT ${ano}/${ano + 1} — Comércio Varejista`, numeroRegistro: `SP00${entre(1000, 9999)}/${ano}`,
-      parteContraria: 'Sindicato do Comércio Varejista de Vila Nova (patronal)',
+      sindicatoId: sindicato.id, tipo: 'CCT', titulo: `CCT ${ano}/${ano + 1} — Serviços Notariais e de Registro (exemplo)`, numeroRegistro: `SP00${entre(1000, 9999)}/${ano}`,
+      parteContraria: 'Sindicato patronal (exemplo)',
       vigenciaInicio: new Date(hoje.getTime() - 300 * 86_400_000), vigenciaFim: new Date(hoje.getTime() + 65 * 86_400_000),
       mesDataBase: 1, pisoCentavos: 196000, reajustePercentual: 5.8,
-      clausulas: '• Piso salarial: R$ 1.960,00\n• Reajuste de 5,8% sobre salários de dezembro\n• Vale-alimentação: R$ 450,00/mês\n• Horas extras: adicional de 60%\n• Trabalho em feriados mediante acordo e folga compensatória\n• Estabilidade pré-aposentadoria: 24 meses',
+      clausulas: '(Exemplo fictício)\n• Piso salarial: R$ 1.960,00\n• Reajuste de 5,8% sobre salários de dezembro\n• Vale-alimentação: R$ 450,00/mês\n• Horas extras: adicional de 60%\n• Plantões em feriados com folga compensatória\n• Estabilidade pré-aposentadoria: 24 meses',
     },
   });
   await db.convencao.create({
@@ -166,13 +168,13 @@ async function main() {
     },
   });
   await db.convencao.create({
-    data: { sindicatoId: sindicato.id, tipo: 'CCT', titulo: `CCT ${ano - 1}/${ano} — Comércio Varejista`, vigenciaInicio: dia(ano - 2, 1, 1), vigenciaFim: dia(ano - 1, 12, 31), mesDataBase: 1, pisoCentavos: 185000, reajustePercentual: 4.5 },
+    data: { sindicatoId: sindicato.id, tipo: 'CCT', titulo: `CCT ${ano - 1}/${ano} — Serviços Notariais e de Registro (exemplo)`, vigenciaInicio: dia(ano - 2, 1, 1), vigenciaFim: dia(ano - 1, 12, 31), mesDataBase: 1, pisoCentavos: 185000, reajustePercentual: 4.5 },
   });
 
   const assuntos = [
     ['JURIDICO', 'Horas extras não pagas'], ['HOMOLOGACAO', 'Conferência de rescisão'], ['DENUNCIA', 'Assédio moral na loja'],
     ['ORIENTACAO', 'Dúvida sobre férias'], ['JURIDICO', 'Desvio de função'], ['HOMOLOGACAO', 'Cálculo de verbas rescisórias'],
-    ['ORIENTACAO', 'Direito a vale-alimentação'], ['DENUNCIA', 'Falta de EPI no açougue'],
+    ['ORIENTACAO', 'Direito a vale-alimentação'], ['DENUNCIA', 'Acúmulo de função sem adicional'],
   ] as const;
   for (let i = 0; i < assuntos.length; i++) {
     const [tipo, assunto] = assuntos[i];

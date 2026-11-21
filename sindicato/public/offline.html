@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16325c">
+<title>Sem conexão · SINDENOR-PI</title>
+<style>
+  :root { --fundo: #f4f6f9; --sup: #fff; --texto: #1d2430; --suave: #5d6878; --prim: #16325c; --borda: #e2e6ec; }
+  @media (prefers-color-scheme: dark) { :root { --fundo: #12161d; --sup: #1a2029; --texto: #e6e9ef; --suave: #9aa5b5; --prim: #8fb3ea; --borda: #2c3440; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--fundo); color: var(--texto); }
+  main { background: var(--sup); border: 1px solid var(--borda); border-radius: 14px; padding: 28px 22px; max-width: 420px; width: 100%; text-align: center; }
+  svg { border-radius: 16px; }
+  h1 { font-size: 1.3rem; margin: 16px 0 8px; }
+  p { color: var(--suave); line-height: 1.5; margin: 0 0 20px; }
+  button { font: inherit; font-weight: 600; border: 0; border-radius: 8px; padding: 12px 20px; min-height: 44px;
+    background: #16325c; color: #fff; cursor: pointer; width: 100%; }
+</style>
+</head>
+<body>
+<main>
+  <svg width="72" height="72" xmlns="http://www.w3.org/2000/svg" viewBox="411 291 377 377">  <rect x="411" y="291" width="377" height="377" rx="88" fill="#16325c"/>  <path d="M600 343 C584 372 548 428 536 462 C522 503 528 548 552 578 C566 596 582 607 594 616 L594 518 A22 22 0 1 1 606 518 L606 616 C618 607 634 596 648 578 C672 548 678 503 664 462 C652 428 616 372 600 343 Z" fill="#fff"/>  <rect x="503" y="629" width="194" height="17" rx="8.5" fill="#f2a900"/></svg>
+  <h1>Sem conexão com o servidor</h1>
+  <p>O app não conseguiu falar com o servidor do sindicato. Verifique se o celular está no Wi-Fi do sindicato (ou na VPN) e tente de novo.</p>
+  <button type="button" onclick="location.reload()">Tentar novamente</button>
+</main>
+<script>window.addEventListener('online', function () { location.reload(); });</script>
+</body>
+</html>

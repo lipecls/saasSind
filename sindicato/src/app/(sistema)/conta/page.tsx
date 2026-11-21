@@ -1,3 +1,4 @@
+import { BotaoInstalar } from '@/components/App';
 import { Campo } from '@/components/Campos';
 import { Form } from '@/components/Form';
 import { Cabecalho, Cartao, Dados } from '@/components/Ui';
@@ -15,6 +16,7 @@ export default async function Conta() {
       <div className="grade-2">
         <Cartao titulo="Dados">
           <Dados itens={[['Nome', u.nome], ['E-mail', u.email], ['Perfil', PAPEL[u.papel]], ['Sindicato', u.sindicato.nome]]} />
+          <BotaoInstalar />
         </Cartao>
         <Cartao titulo="Alterar senha">
           <Form acao={trocarSenha} rotulo="Alterar senha">

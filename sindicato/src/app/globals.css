@@ -4,11 +4,15 @@
   --borda: #e2e6ec;
   --texto: #1d2430;
   --texto-suave: #5d6878;
-  --primaria: #b3261e;
-  --primaria-escura: #8c1d17;
-  --primaria-clara: #fdecea;
-  --lateral: #1f2530;
-  --lateral-texto: #c9d0db;
+  /* Identidade SINDENOR-PI: azul-marinho e dourado */
+  --primaria: #16325c;
+  --primaria-escura: #0e2343;
+  --primaria-clara: #e6ecf5;
+  --sobre-primaria: #ffffff;
+  --destaque: #f2a900;
+  --destaque-escuro: #b86e00;
+  --lateral: #16325c;
+  --lateral-texto: #c8d3e6;
   --verde: #1e7d45;
   --verde-fundo: #e3f4ea;
   --amarelo: #8a5a00;
@@ -31,10 +35,11 @@
     --borda: #2c3440;
     --texto: #e6e9ef;
     --texto-suave: #9aa5b5;
-    --primaria: #e5534b;
-    --primaria-escura: #c9443d;
-    --primaria-clara: #3a1f1e;
-    --lateral: #0d1016;
+    --primaria: #8fb3ea;
+    --primaria-escura: #b3cdf3;
+    --primaria-clara: #1c2a40;
+    --sobre-primaria: #0b1628;
+    --lateral: #0e2343;
     --verde: #5fcf8d;
     --verde-fundo: #16301f;
     --amarelo: #e8b450;
@@ -75,11 +80,12 @@ small { color: var(--texto-suave); }
 .marca { display: flex; gap: 0.6rem; align-items: center; padding: 0 0.5rem 1rem; border-bottom: 1px solid #ffffff1a; }
 .marca strong { color: #fff; display: block; }
 .marca small { color: var(--lateral-texto); font-size: 0.75rem; display: block; line-height: 1.2; }
-.logo { font-size: 1.6rem; }
+.simbolo { width: 40px; height: 40px; flex: none; display: block; }
+.lateral .simbolo { border-radius: 10px; box-shadow: 0 0 0 1px #ffffff26; }
 .menu { display: flex; flex-direction: column; gap: 2px; margin-top: 1rem; flex: 1; overflow-y: auto; }
 .menu a { color: var(--lateral-texto); padding: 0.55rem 0.75rem; border-radius: 8px; display: flex; gap: 0.6rem; }
 .menu a:hover { background: #ffffff12; text-decoration: none; color: #fff; }
-.menu a.ativo { background: var(--primaria); color: #fff; }
+.menu a.ativo { background: var(--destaque); color: #16325c; font-weight: 600; }
 .usuario { border-top: 1px solid #ffffff1a; padding: 0.75rem 0.5rem 0; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
 .usuario a { color: #fff; }
 .usuario strong { display: block; font-size: 0.9rem; }
@@ -100,7 +106,7 @@ small { color: var(--texto-suave); }
   font: inherit; font-weight: 600; cursor: pointer; text-decoration: none !important; white-space: nowrap;
 }
 .btn:disabled { opacity: 0.6; cursor: progress; }
-.btn-primario { background: var(--primaria); color: #fff; }
+.btn-primario { background: var(--primaria); color: var(--sobre-primaria); }
 .btn-primario:hover { background: var(--primaria-escura); }
 .btn-secundario { background: var(--superficie); color: var(--texto); border-color: var(--borda); }
 .btn-secundario:hover { background: var(--cinza-fundo); }
@@ -170,7 +176,7 @@ input, select, textarea {
   font: inherit; color: var(--texto); background: var(--superficie);
   border: 1px solid var(--borda); border-radius: 8px; padding: 0.5rem 0.65rem; width: 100%;
 }
-input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--primaria) 40%, transparent); border-color: var(--primaria); }
+input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--primaria) 35%, transparent); border-color: var(--primaria); }
 textarea { resize: vertical; }
 .form-acoes { display: flex; justify-content: flex-end; }
 .filtros { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
@@ -210,9 +216,8 @@ textarea { resize: vertical; }
 /* Páginas públicas */
 .publico { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; gap: 1.5rem; }
 .publico-marca { text-align: center; }
-.publico-marca strong { font-size: 1.6rem; display: block; }
-.publico-marca p { margin: 0.25rem 0 0; color: var(--texto-suave); }
-.publico-marca .logo { font-size: 2.4rem; }
+.publico-marca img { width: min(320px, 80vw); height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .publico-marca img { background: #fff; border-radius: 14px; padding: 0.75rem; } }
 .caixa-publica { background: var(--superficie); border: 1px solid var(--borda); border-radius: 14px; padding: 1.75rem; width: 100%; max-width: 420px; box-shadow: var(--sombra); }
 .caixa-publica h1 { margin-bottom: 1rem; font-size: 1.35rem; }
 .caixa-larga { max-width: 720px; }
@@ -224,19 +229,19 @@ textarea { resize: vertical; }
 .barra-impressao { display: flex; gap: 1rem; align-items: center; }
 .carteirinha {
   width: 86mm; height: 54mm; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;
-  background: linear-gradient(135deg, #b3261e, #6e1510); color: #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  background: linear-gradient(135deg, #1d3f73, #0e2343); color: #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
   font-size: 9pt; -webkit-print-color-adjust: exact; print-color-adjust: exact;
 }
 .carteirinha small { color: #ffffffb3; display: block; font-size: 6.5pt; text-transform: uppercase; letter-spacing: 0.04em; }
 .carteirinha-topo { display: flex; gap: 0.5rem; align-items: center; padding: 3mm 4mm 2mm; border-bottom: 1px solid #ffffff33; }
-.carteirinha-topo .logo { font-size: 16pt; }
+.carteirinha-topo .simbolo { width: 11mm; height: 11mm; border-radius: 2.5mm; box-shadow: 0 0 0 0.3mm #ffffff40; }
 .carteirinha-topo strong { font-size: 10pt; }
 .carteirinha-corpo { padding: 2mm 4mm; flex: 1; }
 .carteirinha-nome { font-weight: 700; font-size: 11pt; margin-bottom: 1.5mm; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .carteirinha-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 3mm; }
 .carteirinha-largo { grid-column: 1 / -1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.carteirinha-rodape { background: #00000040; text-align: center; font-weight: 700; letter-spacing: 0.2em; padding: 1mm; font-size: 7.5pt; }
-.carteirinha-rodape.inativo { background: #000000a0; color: #ffb4ae; }
+.carteirinha-rodape { background: #f2a900; color: #16325c; text-align: center; font-weight: 800; letter-spacing: 0.2em; padding: 1mm; font-size: 7.5pt; }
+.carteirinha-rodape.inativo { background: #5d6878; color: #fff; }
 
 @media print {
   .lateral, .nao-imprimir { display: none !important; }
@@ -245,14 +250,70 @@ textarea { resize: vertical; }
   body { background: #fff; }
 }
 
+/* App no celular */
+.topo-movel, .nav-inferior { display: none; }
+.btn-bloco { width: 100%; }
+.instalar { margin-top: 1rem; }
+.instalar-ajuda { margin-top: 0.5rem; font-size: 0.88rem; background: var(--azul-fundo); color: var(--texto); padding: 0.6rem 0.8rem; border-radius: 8px; }
+.gaveta-fundo { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: 50; display: flex; align-items: flex-end; }
+.gaveta {
+  background: var(--lateral); color: var(--lateral-texto); width: 100%; max-height: 85vh; overflow-y: auto;
+  border-radius: 16px 16px 0 0; padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  animation: subir 0.18s ease-out;
+}
+@keyframes subir { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+.gaveta-topo { display: flex; justify-content: space-between; align-items: center; color: #fff; padding: 0 0.25rem 0.5rem; }
+.gaveta-topo .btn-link { color: var(--lateral-texto); }
+.gaveta .menu { flex-direction: column; margin-top: 0.25rem; }
+.gaveta .menu a { padding: 0.75rem; font-size: 1rem; }
+.gaveta .usuario { margin-top: 1rem; }
+.gaveta .instalar .btn-secundario { background: #ffffff14; color: #fff; border-color: #ffffff2a; }
+
+@media print {
+  .topo-movel, .nav-inferior { display: none !important; }
+}
+
 /* Responsivo */
 @media (max-width: 900px) {
-  .sistema { grid-template-columns: 1fr; }
-  .lateral { position: static; height: auto; }
-  .menu { flex-direction: row; flex-wrap: wrap; flex: none; }
-  .menu a { padding: 0.4rem 0.6rem; font-size: 0.88rem; }
+  .sistema { display: block; }
+  .lateral { display: none; }
+  .topo-movel {
+    display: flex; align-items: center; gap: 0.6rem; position: sticky; top: 0; z-index: 20;
+    background: var(--lateral); color: #fff; padding: calc(0.7rem + env(safe-area-inset-top)) 1rem 0.7rem;
+  }
+  .topo-movel .simbolo { width: 30px; height: 30px; border-radius: 8px; box-shadow: 0 0 0 1px #ffffff26; }
+  .topo-movel strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav-inferior {
+    display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    background: var(--superficie); border-top: 1px solid var(--borda);
+    padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+  }
+  .nav-inferior a, .nav-inferior button {
+    display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 0.5rem 0.1rem 0.45rem;
+    font: inherit; font-size: 0.72rem; font-weight: 600; color: var(--texto-suave); background: none; border: 0; cursor: pointer;
+    text-decoration: none !important; min-height: 56px; justify-content: center;
+  }
+  .nav-inferior span { font-size: 1.25rem; line-height: 1; }
+  .nav-inferior .ativo { color: var(--primaria); box-shadow: inset 0 3px 0 var(--destaque); }
+  .conteudo { padding: 1.1rem 1rem calc(5.5rem + env(safe-area-inset-bottom)); }
+  h1 { font-size: 1.35rem; }
   .grade-2 { grid-template-columns: 1fr; }
-  .conteudo { padding: 1.25rem 1rem 2.5rem; }
+  .cabecalho { align-items: flex-start; }
+  .cabecalho-acoes { width: 100%; }
+  .cabecalho-acoes > .btn { flex: 1 1 auto; }
+  .cartao { padding: 1rem; overflow-x: auto; }
+  .indicadores { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+  .indicador { padding: 0.8rem; }
+  .indicador strong { font-size: 1.25rem; }
   .filtros input:not([type='checkbox']), .filtros select { min-width: 0; flex: 1 1 160px; }
-  .popover-corpo { width: min(340px, 85vw); }
+  /* 16px evita o zoom automático do iPhone ao tocar num campo */
+  input, select, textarea { font-size: 16px; }
+  .btn { min-height: 42px; }
+  .btn-pequeno { min-height: 36px; }
+  /* "Receber" vira um painel fixo acima da barra inferior */
+  .popover-corpo { position: fixed; left: 12px; right: 12px; top: auto; bottom: calc(70px + env(safe-area-inset-bottom)); width: auto; z-index: 41; box-shadow: 0 -6px 40px rgba(0, 0, 0, 0.35); }
+  .tabela th, .tabela td { padding: 0.55rem 0.6rem; }
+}
+@media (max-width: 380px) {
+  .indicadores { grid-template-columns: 1fr; }
 }
