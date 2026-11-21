@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="411 291 377 377">
+  <!-- Símbolo do SINDENOR-PI: pena/folha com barra dourada -->
+  <rect x="411" y="291" width="377" height="377" rx="88" fill="#16325c"/>
+  <path d="M600 343 C584 372 548 428 536 462 C522 503 528 548 552 578 C566 596 582 607 594 616 L594 518 A22 22 0 1 1 606 518 L606 616 C618 607 634 596 648 578 C672 548 678 503 664 462 C652 428 616 372 600 343 Z" fill="#fff"/>
+  <rect x="503" y="629" width="194" height="17" rx="8.5" fill="#f2a900"/>
+</svg>

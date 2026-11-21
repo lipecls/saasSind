@@ -1,0 +1,43 @@
+# Sistema de gestão do sindicato: aplicação + banco PostgreSQL.
+# Uso: cp .env.example .env  (edite as senhas)  &&  docker compose up -d --build
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sindicato
+      POSTGRES_USER: sind
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no arquivo .env}
+      TZ: America/Sao_Paulo
+    volumes:
+      - dados_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sind -d sindicato"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://sind:${POSTGRES_PASSWORD}@db:5432/sindicato
+      SESSION_SECRET: ${SESSION_SECRET:?defina SESSION_SECRET no arquivo .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      TZ: America/Sao_Paulo
+    ports:
+      - "${APP_PORT:-3000}:3000"
+
+  # Ferramenta de envio dos backups ao Google Drive (não fica rodando; é usada pelos scripts).
+  rclone:
+    image: rclone/rclone:1.68.2
+    profiles: ["ferramentas"]
+    volumes:
+      - ./rclone:/config/rclone
+      - ./backups:/data
+
+volumes:
+  dados_postgres:
