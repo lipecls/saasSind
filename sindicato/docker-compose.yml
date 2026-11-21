@@ -31,5 +31,13 @@ services:
     ports:
       - "${APP_PORT:-3000}:3000"
 
+  # Ferramenta de envio dos backups ao Google Drive (não fica rodando; é usada pelos scripts).
+  rclone:
+    image: rclone/rclone:1.68.2
+    profiles: ["ferramentas"]
+    volumes:
+      - ./rclone:/config/rclone
+      - ./backups:/data
+
 volumes:
   dados_postgres:

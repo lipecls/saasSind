@@ -22,7 +22,7 @@ Next.js 15 (App Router + Server Actions) · React 19 · TypeScript · PostgreSQL
 
 ## Instalação no servidor do sindicato
 
-Veja o passo a passo em **[INSTALACAO.md](INSTALACAO.md)** (Docker ou manual no Ubuntu, backup e atualização).
+Veja o passo a passo em **[INSTALACAO.md](INSTALACAO.md)** (Docker ou manual no Ubuntu, atualização e backup automático criptografado no Google Drive).
 
 ## Rodando para desenvolvimento
 

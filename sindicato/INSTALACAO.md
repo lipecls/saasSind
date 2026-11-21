@@ -97,13 +97,46 @@ Agende um backup diário (Linux) com `crontab -e`:
 0 2 * * * /caminho/para/saasSind/sindicato/scripts/backup.sh >> /var/log/backup-sindicato.log 2>&1
 ```
 
-> **Importante:** copie a pasta `backups/` para **fora do servidor** (HD externo, Google Drive, outro computador). Backup que fica só no próprio servidor se perde junto com ele.
+> **Importante:** guarde cópias **fora do servidor** — backup que fica só no próprio servidor se perde junto com ele. A forma recomendada é o envio automático ao Google Drive, abaixo.
 
-Para restaurar (substitui os dados atuais):
+### Backup automático no Google Drive
+
+Depois de configurado, cada execução do `backup.sh` (inclusive a agendada no cron) também envia o backup para uma pasta do Google Drive:
+
+- **Criptografado:** filiação sindical é dado pessoal sensível (LGPD, art. 5º, II). No Drive, nomes e conteúdo dos arquivos ficam ilegíveis — nem o Google nem quem tiver acesso à conta consegue lê-los sem a senha de criptografia.
+- **Acesso mínimo:** o sistema só enxerga os arquivos que ele mesmo criou no Drive.
+- **Retenção:** backups com mais de 90 dias são apagados do Drive (ajuste `GDRIVE_RETENCAO_DIAS` no `.env`). No servidor ficam os 30 mais recentes.
+
+**Configurar (uma vez):**
 
 ```bash
-./scripts/restaurar.sh backups/sindicato-AAAA-MM-DD_HHMM.sql.gz
+./scripts/configurar-google-drive.sh
 ```
+
+O script guia o processo:
+
+1. Num computador **com navegador** (pode ser o seu, com Windows), baixe o [rclone](https://rclone.org/downloads/), abra o terminal na pasta dele e rode:
+   ```
+   rclone authorize "drive" "eyJzY29wZSI6ImRyaXZlLmZpbGUifQ"
+   ```
+   Entre com a **conta Google do sindicato** e clique em *Permitir*.
+2. Copie o texto que aparece entre `--->` e `<---` (começa com `{"access_token"`) e cole no servidor.
+3. Escolha a **senha de criptografia** (mínimo 12 caracteres).
+
+> ⚠️ **Guarde a senha de criptografia em local seguro, fora do servidor** (ex.: cofre de senhas, envelope lacrado com a diretoria). Sem ela, os backups do Drive **não podem ser recuperados**.
+
+O script testa o acesso no final; se falhar, a configuração é desfeita e os backups continuam apenas no servidor.
+
+Depois, rode `./scripts/backup.sh` para enviar o primeiro e confira a pasta **Backups Sindicato** no Drive.
+
+**Restaurar a partir do Drive:**
+
+```bash
+./scripts/restaurar.sh --drive                                   # lista os backups no Drive
+./scripts/restaurar.sh --drive sindicato-AAAA-MM-DD_HHMM.sql.gz  # baixa e restaura
+```
+
+**Se o servidor for perdido:** instale o sistema num servidor novo (passos 1 a 4), rode `./scripts/configurar-google-drive.sh` com a **mesma conta Google e a mesma senha de criptografia**, e restaure com `./scripts/restaurar.sh --drive`.
 
 ---
 
@@ -176,6 +209,8 @@ Logs: `journalctl -u sindicato -f`.
 
 **Backup:** `pg_dump -U sind -h localhost sindicato | gzip > backup-$(date +%F).sql.gz`
 
+**Google Drive sem Docker:** os scripts de backup acima são para a instalação com Docker. Na instalação manual, instale o rclone (`sudo apt-get install -y rclone`), crie os remotos com os mesmos comandos do `scripts/configurar-google-drive.sh` (trocando `docker compose run --rm -T rclone` por `rclone`) e envie com `rclone copy backup-DATA.sql.gz gdrive-cripto:`.
+
 ---
 
 ## Acesso de fora do sindicato / HTTPS (opcional)
@@ -189,4 +224,5 @@ Para uso apenas na rede interna, `http://IP:3000` é suficiente. Se precisar ace
 | Faz login e volta para a tela de login | `COOKIE_SECURE=true` com acesso por `http://`. Use `false` ou configure HTTPS |
 | Outros computadores não abrem a página | Firewall do servidor bloqueando a porta 3000, ou IP do servidor mudou |
 | `defina POSTGRES_PASSWORD no arquivo .env` | O arquivo `.env` não foi criado na pasta `sindicato` |
+| Backup não chega no Drive | Rode `./scripts/backup.sh` manualmente e veja a mensagem; se o acesso ao Google expirou ou foi revogado, rode `./scripts/configurar-google-drive.sh` de novo (mesma senha) |
 | App não fica `healthy` | Veja `docker compose logs app` (geralmente senha do banco diferente da usada na 1ª instalação) |
